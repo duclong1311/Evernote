@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,9 @@ namespace Evernote_Application.Model
 {
     public class Note
     {
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+        [Indexed]
         public int NotebookID { get; set; }
         public string Title { get; set; }
         public DateTime CreatedAt { get; set; }
