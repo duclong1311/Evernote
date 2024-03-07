@@ -12,7 +12,11 @@ namespace Evernote_Application.ViewModel.Commands
     {
         public NotesViewModel VM { get; set; }
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value;}
+        }
 
         public NewNoteCommand(NotesViewModel vm)
         {

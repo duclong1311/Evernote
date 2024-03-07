@@ -28,5 +28,9 @@ namespace Evernote_Application.View
         {
             Application.Current.Shutdown();
         }
+        private void SpeechButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

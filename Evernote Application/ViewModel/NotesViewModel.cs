@@ -4,6 +4,7 @@ using Evernote_Application.ViewModel.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,31 +12,33 @@ using System.Xml.Linq;
 
 namespace Evernote_Application.ViewModel
 {
-    public class NotesViewModel
+    public class NotesViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<Notebook> notebooks { get; set; }
-
+        public ObservableCollection<Notebook> Notebooks { get; set; }
+        public ObservableCollection<Note> Notes { get; set; }
         private Notebook selectedNotebook;
-
         public Notebook SelectedNotebook
         {
             get { return selectedNotebook; }
-            set 
+            set
             {
-                selectedNotebook = value; 
-                //TODO: get notes
+                selectedNotebook = value;
+                OnPropertyChanged("selectedNotebook");
+                GetNotes();
             }
         }
-
-        public ObservableCollection<Note> Notes {  get; set; }
-
         public NewNotebookCommand NewNotebookCommand { get; set; }
         public NewNoteCommand NewNoteCommand { get; set; }
-
+        public event PropertyChangedEventHandler? PropertyChanged;
         public NotesViewModel()
         {
             NewNotebookCommand = new NewNotebookCommand(this);
             NewNoteCommand = new NewNoteCommand(this);
+
+            Notebooks = new ObservableCollection<Notebook>();
+            Notes = new ObservableCollection<Note>();
+
+            GetNoteBooks();
         }
         public void CreateNotebook()
         {
@@ -45,8 +48,10 @@ namespace Evernote_Application.ViewModel
             };
 
             DatabaseHelper.Insert(newNotebook);
+
+            GetNoteBooks();
         }
-        public void CreateNote(int notebookId)  
+        public void CreateNote(int notebookId)
         {
             Note newNote = new Note()
             {
@@ -57,6 +62,38 @@ namespace Evernote_Application.ViewModel
             };
 
             DatabaseHelper.Insert(newNote);
+
+            GetNotes();
+        }
+
+        private void GetNoteBooks()
+        {
+            var notebooks = DatabaseHelper.Read<Notebook>();
+
+            Notebooks.Clear();
+            foreach (var notebook in Notebooks)
+            {
+                Notebooks.Add(notebook);
+            }
+        }
+
+        private void GetNotes()
+        {
+            if (SelectedNotebook != null)
+            {
+                var notes = DatabaseHelper.Read<Note>().Where(n => n.NotebookID == SelectedNotebook.Id).ToList();
+
+                Notes.Clear();
+                foreach (var note in notes)
+                {
+                    Notes.Add(note);
+                }
+            }
+        }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
