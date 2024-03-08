@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,16 +10,26 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Evernote_Application.View
+namespace EvernoteClone.View
 {
     /// <summary>
-    /// Interaction logic for LoginWindow.xaml
+    /// Interaction logic for NotesWindow.xaml
     /// </summary>
-    public partial class LoginWindow : Window
+    public partial class NotesWindow : Window
     {
-        public LoginWindow()
+        public NotesWindow()
         {
             InitializeComponent();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void SpeechButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

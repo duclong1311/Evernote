@@ -1,18 +1,16 @@
-﻿using Evernote_Application.Model;
-using Evernote_Application.ViewModel.Commands;
-using Evernote_Application.ViewModel.Helpers;
+﻿using EvernoteClone.Model;
+using EvernoteClone.ViewModel.Commands;
+using EvernoteClone.ViewModel.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace Evernote_Application.ViewModel
+namespace EvernoteClone.ViewModel
 {
-    public class NotesViewModel : INotifyPropertyChanged
+    public class NotesVM : INotifyPropertyChanged
     {
         public ObservableCollection<Notebook> Notebooks { get; set; }
         public ObservableCollection<Note> Notes { get; set; }
@@ -23,42 +21,46 @@ namespace Evernote_Application.ViewModel
             set
             {
                 selectedNotebook = value;
-                OnPropertyChanged("selectedNotebook");
+                OnPropertyChanged("SelectedNotebook");
                 GetNotes();
             }
         }
         public NewNotebookCommand NewNotebookCommand { get; set; }
         public NewNoteCommand NewNoteCommand { get; set; }
-        public event PropertyChangedEventHandler? PropertyChanged;
-        public NotesViewModel()
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public NotesVM()
         {
-            NewNotebookCommand = new NewNotebookCommand(this);
             NewNoteCommand = new NewNoteCommand(this);
+            NewNotebookCommand = new NewNotebookCommand(this);
 
             Notebooks = new ObservableCollection<Notebook>();
             Notes = new ObservableCollection<Note>();
 
-            GetNoteBooks();
+            GetNotebooks();
         }
+
         public void CreateNotebook()
         {
-            Notebook newNotebook = new Notebook()
+            Notebook newNotebook = new Notebook
             {
-                Name = "New notebook"
+                Name = "Notebook"
             };
 
             DatabaseHelper.Insert(newNotebook);
 
-            GetNoteBooks();
+            GetNotebooks();
         }
+
         public void CreateNote(int notebookId)
         {
-            Note newNote = new Note()
+            Note newNote = new Note
             {
-                NotebookID = notebookId,
+                NotebookId = notebookId,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                Title = "New note"
+                Title = $"Note for {DateTime.Now.ToString()}"
             };
 
             DatabaseHelper.Insert(newNote);
@@ -66,12 +68,12 @@ namespace Evernote_Application.ViewModel
             GetNotes();
         }
 
-        private void GetNoteBooks()
+        private void GetNotebooks()
         {
             var notebooks = DatabaseHelper.Read<Notebook>();
 
             Notebooks.Clear();
-            foreach (var notebook in Notebooks)
+            foreach(var notebook in notebooks)
             {
                 Notebooks.Add(notebook);
             }
@@ -81,7 +83,7 @@ namespace Evernote_Application.ViewModel
         {
             if (SelectedNotebook != null)
             {
-                var notes = DatabaseHelper.Read<Note>().Where(n => n.NotebookID == SelectedNotebook.Id).ToList();
+                var notes = DatabaseHelper.Read<Note>().Where(n => n.NotebookId == SelectedNotebook.Id).ToList();
 
                 Notes.Clear();
                 foreach (var note in notes)
